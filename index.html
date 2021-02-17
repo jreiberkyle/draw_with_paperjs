@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- IE 9: display inline SVG -->
+  <meta http-equiv="X-UA-Compatible" content="IE=9">
+  <!-- Load the Paper.js library -->
+  <script type="text/javascript" src="dep/paper-full.js"></script>
+  <!-- Define inlined PaperScript associate it with myCanvas -->
+  <script type="text/paperscript" src="js/utils.js" canvas="myCanvas"></script>
+  <script type="text/paperscript" src="js/fileIO.js" canvas="myCanvas"></script>
+  <script type="text/paperscript" src="js/centroidUtils.js" canvas="myCanvas"></script>
+  <script type="text/paperscript" canvas="myCanvas">
+    var ps = this;
+    var dpi = 96;
+
+    function drawCentroid(item) {
+      var centroid_circle_radius = 2;
+      
+      // var outline = item.firstChild.clone();
+      item.firstChild.remove();
+      var shape = item.firstChild;
+      if (shape instanceof Group) {
+        console.log(shape);
+        shape = shape.firstChild;
+        console.log(shape);
+      };
+      console.log(shape.area);
+      shape.strokeJoin = 'round';
+      shape.strokeColor = 'red';
+      ps.scaleAndShift(shape, dpi);
+
+      var centroid = ps.calcCentroid(shape);
+      var centroid_circle = new Path.Circle(centroid, centroid_circle_radius);
+      centroid_circle.strokeColor = 'blue';
+    };
+
+    // ps.importSVG('svg/Heron-body_clean.svg', project, drawCentroid);
+    ps.importSVG('svg/heron-wing_clean2.svg', project, drawCentroid);
+    
+    document.getElementById("download-to-svg").onclick = function(){
+     var filename = "custom.svg";
+     var outline = new Path.Rectangle(0, 0, 20*dpi, 12*dpi);
+     var options = {asString: true, bounds: 'content'};
+     var url = "data:image/svg+xml;utf8," + encodeURIComponent(project.exportSVG(options));
+     var link = document.createElement("a");
+     console.log('downloading as ' + filename);
+     link.download = filename;
+     link.href = url;
+     link.click();
+    }
+</script>
+<script type="text/javascript">
+
+</script>
+</head>
+<body>
+  <!-- <form><input type="file" id="file"></form> -->
+	<button id="download-to-svg">DOWNLOAD</button>
+  <canvas id="myCanvas" width="1500" height="500"></canvas>
+</body>
+</html>
